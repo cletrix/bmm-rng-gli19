@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package rng.v1;
+
+option go_package = "github.com/lucky-and-fun/rng-service/proto/rng/v1;rngv1";
+
+// RNGService provides cryptographically secure random number generation
+// for iGaming use cases. Used internally by landf_game_bingo and VLT.
+service RNGService {
+  rpc Generate(GenerateRequest)             returns (GenerateResponse);
+  rpc GenerateBatch(GenerateBatchRequest)   returns (GenerateBatchResponse);
+  rpc Shuffle(ShuffleRequest)               returns (ShuffleResponse);
+  rpc HealthCheck(HealthCheckRequest)       returns (HealthCheckResponse);
+  rpc StreamGenerate(GenerateRequest)       returns (stream GenerateResponse);
+}
+
+// ─── Generate ────────────────────────────────────────────────────────────────
+
+message GenerateRequest {
+  string tenant_id = 1; // required: identifies the B2B operator
+  string game_id   = 2; // required: identifies the game type
+  string round_id  = 3; // required: identifies the specific round
+  uint32 count     = 4; // number of values to generate
+  int64  min       = 5; // inclusive minimum
+  int64  max       = 6; // inclusive maximum
+}
+
+message GenerateResponse {
+  string   request_id    = 1;
+  repeated int64 values  = 2;
+  string   timestamp_utc = 3; // RFC3339Nano UTC
+  string   signature     = 4; // HMAC-SHA256 hex
+  string   audit_hash    = 5; // SHA256 chain entry hex
+}
+
+// ─── Batch ───────────────────────────────────────────────────────────────────
+
+message BatchItem {
+  uint32 count = 1;
+  int64  min   = 2;
+  int64  max   = 3;
+}
+
+message GenerateBatchRequest {
+  string   tenant_id = 1;
+  string   game_id   = 2;
+  string   round_id  = 3;
+  repeated BatchItem requests = 4;
+}
+
+message GenerateBatchResponse {
+  repeated GenerateResponse results = 1;
+}
+
+// ─── Shuffle ─────────────────────────────────────────────────────────────────
+
+message ShuffleRequest {
+  string   tenant_id = 1;
+  string   game_id   = 2;
+  string   round_id  = 3;
+  repeated int64 items = 4; // deck to shuffle, e.g. [1..90] for bingo
+}
+
+message ShuffleResponse {
+  string   request_id    = 1;
+  repeated int64 shuffled = 2;
+  string   timestamp_utc = 3;
+  string   signature     = 4;
+  string   audit_hash    = 5;
+}
+
+// ─── Health ──────────────────────────────────────────────────────────────────
+
+message HealthCheckRequest {}
+
+message HealthCheckResponse {
+  string status               = 1; // "ok" | "degraded" | "error"
+  string entropy_pool         = 2;
+  string csprng               = 3;
+  string audit_store          = 4;
+  string last_reseed_utc      = 5;
+  uint64 outputs_since_reseed = 6;
+  string binary_hash          = 7;
+}
