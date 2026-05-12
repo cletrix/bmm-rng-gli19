@@ -111,8 +111,8 @@ cat /proc/sys/kernel/random/entropy_avail
 
 | Variável | Padrão | Descrição |
 |---|---|---|
-| `RNG_PORT_REST` | `8080` | Porta da API REST |
-| `RNG_PORT_GRPC` | `8081` | Porta gRPC |
+| `RNG_PORT_REST` | `2080` | Porta da API REST |
+| `RNG_PORT_GRPC` | `2081` | Porta gRPC |
 | `RNG_METRICS_PORT` | `9090` | Porta Prometheus |
 | `RNG_JWT_SECRET` | — | Secret HMAC para tokens JWT |
 | `RNG_API_KEYS` | — | `"key1:tenant-a,key2:tenant-b"` |

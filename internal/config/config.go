@@ -58,8 +58,8 @@ func Load() (*Config, error) {
 	c := &Config{}
 
 	c.Env = getEnv("RNG_ENV", "development")
-	c.Port.REST = getEnv("RNG_PORT_REST", "8080")
-	c.Port.GRPC = getEnv("RNG_PORT_GRPC", "8081")
+	c.Port.REST = getEnv("RNG_PORT_REST", "2080")
+	c.Port.GRPC = getEnv("RNG_PORT_GRPC", "2081")
 	c.Port.Metrics = getEnv("RNG_METRICS_PORT", "9090")
 	c.BinaryHash = getEnv("RNG_BINARY_HASH", "dev-build")
 	c.HWRNGPath = getEnv("RNG_HWRNG_PATH", "")
